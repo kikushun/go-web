@@ -1,46 +1,45 @@
 package controller
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
+
+	"github.com/kikuchi/go-web/service"
+
+	"github.com/kikuchi/go-web/model"
 )
 
-// UserController aa
+// UserController ユーザコントローラ
 func UserController(mux *http.ServeMux) {
-	mux.Handle("/user", Handler{getUser})
-	mux.Handle("/users", Handler{getUsers})
-}
 
-// /user
-func getUser(w http.ResponseWriter, req *http.Request) {
+	// =================
+	// ユーザ登録・更新
+	// =================
+	mux.Handle("/user/save", Handler{func(w http.ResponseWriter, req *http.Request) {
 
-	client := &http.Client{}
+		user := &model.User{}
+		if err := ConvertRequestBodyToModel(req.Body, user); err != nil {
+			ReturnError(w, err.Error())
+		}
 
-	req, err := http.NewRequest("GET", "http://localhost:9200/", nil)
-	if err != nil {
-		fmt.Println("err!")
-	}
+		resp, err := service.SaveUser(user)
+		if err != nil {
+			ReturnError(w, err.Error())
+		}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("err!!!!!!")
-	}
+		ReturnByJSON(w, resp)
+	}})
 
-	defer resp.Body.Close()
+	// =================
+	// ユーザ情報取得
+	// =================
+	mux.Handle("/user", Handler{func(w http.ResponseWriter, req *http.Request) {
+		return
+	}})
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("err....")
-	}
-
-	var jsonBody interface{}
-	err = json.Unmarshal(body, &jsonBody)
-
-	fmt.Fprintln(w, jsonBody)
-}
-
-func getUsers(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "users")
+	// ================
+	// ユーザリスト取得
+	// ================
+	mux.Handle("/users", Handler{func(w http.ResponseWriter, req *http.Request) {
+		return
+	}})
 }

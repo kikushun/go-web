@@ -1,21 +1,17 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 )
 
-// CategoryController aa
+// CategoryController カテゴリコントローラ
 func CategoryController(mux *http.ServeMux) {
-	mux.Handle("/category", Handler{getCategory})
-	mux.Handle("/categories", Handler{getCategories})
-}
 
-// /user
-func getCategory(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "category")
-}
+	mux.Handle("/category", Handler{func(w http.ResponseWriter, req *http.Request) {
+		return
+	}})
 
-func getCategories(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "categories")
+	mux.Handle("/categories", Handler{func(w http.ResponseWriter, req *http.Request) {
+		return
+	}})
 }
