@@ -3,6 +3,8 @@ package controller
 import (
 	"net/http"
 
+	"github.com/kikuchi/go-web/util"
+
 	"github.com/kikuchi/go-web/service"
 
 	"github.com/kikuchi/go-web/model"
@@ -14,32 +16,25 @@ func UserController(mux *http.ServeMux) {
 	// =================
 	// ユーザ登録・更新
 	// =================
-	mux.Handle("/user/save", Handler{func(w http.ResponseWriter, req *http.Request) {
-
+	mux.Handle("/user/save", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
 		user := &model.User{}
-		if err := ConvertRequestBodyToModel(req.Body, user); err != nil {
-			ReturnError(w, err.Error())
+		if err := util.ConvertToStruct(req.Body, user); err != nil {
+			return nil, err
 		}
-
-		resp, err := service.SaveUser(user)
-		if err != nil {
-			ReturnError(w, err.Error())
-		}
-
-		ReturnByJSON(w, resp)
+		return service.SaveUser(user)
 	}})
 
 	// =================
 	// ユーザ情報取得
 	// =================
-	mux.Handle("/user", Handler{func(w http.ResponseWriter, req *http.Request) {
-		return
+	mux.Handle("/user", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
+		return nil, nil
 	}})
 
 	// ================
 	// ユーザリスト取得
 	// ================
-	mux.Handle("/users", Handler{func(w http.ResponseWriter, req *http.Request) {
-		return
+	mux.Handle("/users", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
+		return nil, nil
 	}})
 }
