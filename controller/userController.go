@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/kikuchi/go-web/util"
@@ -16,25 +17,40 @@ func UserController(mux *http.ServeMux) {
 	// =================
 	// ユーザ登録・更新
 	// =================
-	mux.Handle("/user/save", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
+	mux.Handle("/user/save", model.Handler{Main: func(req *http.Request) interface{} {
 		user := &model.User{}
 		if err := util.ConvertToStruct(req.Body, user); err != nil {
-			return nil, err
+			return err
 		}
-		return service.SaveUser(user)
+		model, err := service.SaveUsers(user)
+		if err != nil {
+			return err
+		}
+		return model
 	}})
 
 	// =================
-	// ユーザ情報取得
+	// ユーザ情報取
 	// =================
-	mux.Handle("/user", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
-		return nil, nil
+	mux.Handle("/user/search", model.Handler{Main: func(req *http.Request) interface{} {
+
+		ids, ok := req.URL.Query()["id"]
+		if !ok {
+			return errors.New("パラーメータが見つからない")
+		}
+
+		searchResp, err := service.SearchUsers(ids)
+		if err != nil {
+			return err
+		}
+
+		return searchResp
 	}})
 
-	// ================
-	// ユーザリスト取得
-	// ================
-	mux.Handle("/users", model.Handler{MainProcess: func(req *http.Request) (interface{}, error) {
-		return nil, nil
+	// =================
+	// ユーザ削除
+	// =================
+	mux.Handle("/user/delete", model.Handler{Main: func(req *http.Request) interface{} {
+		return nil
 	}})
 }
