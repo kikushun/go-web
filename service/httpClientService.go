@@ -8,6 +8,14 @@ import (
 	"time"
 )
 
+var client *http.Client
+
+func init() {
+	client = &http.Client{
+		Timeout: 10 * time.Second,
+	}
+}
+
 // HTTPRequest リクエスト
 func HTTPRequest(method, url string, requestBody, responsBody interface{}) error {
 
@@ -22,9 +30,6 @@ func HTTPRequest(method, url string, requestBody, responsBody interface{}) error
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

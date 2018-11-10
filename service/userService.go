@@ -1,19 +1,31 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/kikuchi/go-web/config"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/kikuchi/go-web/model"
 )
 
-// SaveUsers ユーザ登録・更新
-func SaveUsers(user *model.User) (*model.SaveResp, error) {
+// SaveUser ユーザ登録・更新
+func SaveUser(ID, name, email, password string) (*model.ElasResp, error) {
 
-	escapeURL := "http://localhost:9200/test/doc/" + url.PathEscape(user.Email)
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
 
-	resp := &model.SaveResp{}
-	if err := HTTPRequest(http.MethodPut, escapeURL, user, resp); err != nil {
+	user := &model.User{ID: ID, Name: name, Email: email, Password: hash}
+
+	URL := fmt.Sprintf("%s/%s/%s/%s", config.BaseURL, config.UserIndex, config.UserType, url.PathEscape(ID))
+
+	resp := &model.ElasResp{}
+	if err := HTTPRequest(http.MethodPut, URL, user, resp); err != nil {
 		return nil, err
 	}
 
@@ -28,10 +40,24 @@ func SearchUsers(IDs []string) (*model.SearchResp, error) {
 		searchReq.AddShould("term", "_id", id)
 	}
 
+	URL := fmt.Sprintf("%s/%s/_search", config.BaseURL, config.UserIndex)
+
 	searchResp := &model.SearchResp{}
-	const URL = "http://localhost:9200/test/_search"
 	if err := HTTPRequest(http.MethodPost, URL, searchReq, searchResp); err != nil {
 		return nil, err
 	}
 	return searchResp, nil
+}
+
+// DeleteUser ユーザ削除
+func DeleteUser(ID string) (*model.ElasResp, error) {
+
+	URL := fmt.Sprintf("%s/%s/%s/%s", config.BaseURL, config.UserIndex, config.UserType, url.PathEscape(ID))
+
+	resp := &model.ElasResp{}
+	if err := HTTPRequest(http.MethodDelete, URL, nil, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

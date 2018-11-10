@@ -2,18 +2,14 @@ package controller
 
 import (
 	"net/http"
-
-	"github.com/kikuchi/go-web/model"
 )
 
-// CategoryController カテゴリコントローラ
-func CategoryController(mux *http.ServeMux) {
+// GetCategory get
+func GetCategory(req *http.Request) interface{} {
+	return nil
+}
 
-	mux.Handle("/category", model.Handler{Main: func(req *http.Request) interface{} {
-		return nil
-	}})
-
-	mux.Handle("/categories", model.Handler{Main: func(req *http.Request) interface{} {
-		return nil
-	}})
+// SearchCategory search
+func SearchCategory(req *http.Request) interface{} {
+	return nil
 }

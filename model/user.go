@@ -2,7 +2,8 @@ package model
 
 // User QAシステム利用ユーザ
 type User struct {
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password []byte `json:"password"`
 }

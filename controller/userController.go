@@ -4,53 +4,50 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/kikuchi/go-web/util"
-
 	"github.com/kikuchi/go-web/service"
-
-	"github.com/kikuchi/go-web/model"
 )
 
-// UserController ユーザコントローラ
-func UserController(mux *http.ServeMux) {
+// SaveUser 登録・更新
+func SaveUser(req *http.Request) interface{} {
 
-	// =================
-	// ユーザ登録・更新
-	// =================
-	mux.Handle("/user/save", model.Handler{Main: func(req *http.Request) interface{} {
-		user := &model.User{}
-		if err := util.ConvertToStruct(req.Body, user); err != nil {
-			return err
-		}
-		model, err := service.SaveUsers(user)
-		if err != nil {
-			return err
-		}
-		return model
-	}})
+	id := req.PostFormValue("id")
+	name := req.PostFormValue("name")
+	email := req.PostFormValue("email")
+	password := req.PostFormValue("password")
 
-	// =================
-	// ユーザ情報取
-	// =================
-	mux.Handle("/user/search", model.Handler{Main: func(req *http.Request) interface{} {
+	resp, err := service.SaveUser(id, name, email, password)
+	if err != nil {
+		return err
+	}
+	return resp
+}
 
-		ids, ok := req.URL.Query()["id"]
-		if !ok {
-			return errors.New("パラーメータが見つからない")
-		}
+// SearchUser 検索
+func SearchUser(req *http.Request) interface{} {
+	ids, ok := req.URL.Query()["id"]
+	if !ok {
+		return errors.New("パラーメータが見つからない")
+	}
 
-		searchResp, err := service.SearchUsers(ids)
-		if err != nil {
-			return err
-		}
+	searchResp, err := service.SearchUsers(ids)
+	if err != nil {
+		return err
+	}
 
-		return searchResp
-	}})
+	return searchResp
+}
 
-	// =================
-	// ユーザ削除
-	// =================
-	mux.Handle("/user/delete", model.Handler{Main: func(req *http.Request) interface{} {
-		return nil
-	}})
+// DeleteUser 削除
+func DeleteUser(req *http.Request) interface{} {
+	IDs, ok := req.URL.Query()["id"]
+	if !ok {
+		return errors.New("パラーメータが見つからない")
+	}
+
+	resp, err := service.DeleteUser(IDs[0])
+	if err != nil {
+		return err
+	}
+
+	return resp
 }
