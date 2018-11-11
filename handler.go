@@ -11,7 +11,7 @@ import (
 // handler handler
 type handler struct {
 	method   string
-	mainFunc func(*http.Request) interface{}
+	mainFunc func(*http.ResponseWriter, *http.Request) interface{}
 }
 
 // 共通処理はここ
@@ -25,7 +25,10 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := h.mainFunc(r)
+	// ================
+	// メイン処理
+	// ================
+	data := h.mainFunc(&w, r)
 
 	// ================
 	// 共通処理(後処理)
@@ -44,7 +47,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // h Handlerを返す
-func h(method string, mainFunc func(*http.Request) interface{}) *handler {
+func h(method string, mainFunc func(*http.ResponseWriter, *http.Request) interface{}) *handler {
 
 	return &handler{
 		method:   method,

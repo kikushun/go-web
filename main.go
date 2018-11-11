@@ -9,6 +9,7 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
+	mux.Handle("/login", h("POST", controller.Login))
 	mux.Handle("/category", h("GET", controller.GetCategory))
 	mux.Handle("/category/search", h("GET", controller.SearchCategory))
 	mux.Handle("/user/save", h("POST", controller.SaveUser))

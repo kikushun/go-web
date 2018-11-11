@@ -8,12 +8,12 @@ import (
 )
 
 // SaveUser 登録・更新
-func SaveUser(req *http.Request) interface{} {
+func SaveUser(w *http.ResponseWriter, r *http.Request) interface{} {
 
-	id := req.PostFormValue("id")
-	name := req.PostFormValue("name")
-	email := req.PostFormValue("email")
-	password := req.PostFormValue("password")
+	id := r.PostFormValue("id")
+	name := r.PostFormValue("name")
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
 
 	resp, err := service.SaveUser(id, name, email, password)
 	if err != nil {
@@ -23,8 +23,8 @@ func SaveUser(req *http.Request) interface{} {
 }
 
 // SearchUser 検索
-func SearchUser(req *http.Request) interface{} {
-	ids, ok := req.URL.Query()["id"]
+func SearchUser(w *http.ResponseWriter, r *http.Request) interface{} {
+	ids, ok := r.URL.Query()["id"]
 	if !ok {
 		return errors.New("パラーメータが見つからない")
 	}
@@ -38,8 +38,8 @@ func SearchUser(req *http.Request) interface{} {
 }
 
 // DeleteUser 削除
-func DeleteUser(req *http.Request) interface{} {
-	IDs, ok := req.URL.Query()["id"]
+func DeleteUser(w *http.ResponseWriter, r *http.Request) interface{} {
+	IDs, ok := r.URL.Query()["id"]
 	if !ok {
 		return errors.New("パラーメータが見つからない")
 	}
