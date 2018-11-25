@@ -8,7 +8,7 @@ import (
 )
 
 // SaveUser 登録・更新
-func SaveUser(w *http.ResponseWriter, r *http.Request) interface{} {
+func SaveUser(r *http.Request) interface{} {
 
 	id := r.PostFormValue("id")
 	name := r.PostFormValue("name")
@@ -23,7 +23,7 @@ func SaveUser(w *http.ResponseWriter, r *http.Request) interface{} {
 }
 
 // SearchUser 検索
-func SearchUser(w *http.ResponseWriter, r *http.Request) interface{} {
+func SearchUser(r *http.Request) interface{} {
 	ids, ok := r.URL.Query()["id"]
 	if !ok {
 		return errors.New("パラーメータが見つからない")
@@ -38,7 +38,7 @@ func SearchUser(w *http.ResponseWriter, r *http.Request) interface{} {
 }
 
 // DeleteUser 削除
-func DeleteUser(w *http.ResponseWriter, r *http.Request) interface{} {
+func DeleteUser(r *http.Request) interface{} {
 	IDs, ok := r.URL.Query()["id"]
 	if !ok {
 		return errors.New("パラーメータが見つからない")

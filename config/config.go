@@ -15,6 +15,8 @@ var (
 	UserIndex string
 	// UserType userタイプ
 	UserType string
+	// SecretKey 認証キー
+	SecretKey string
 )
 
 func init() {
@@ -40,4 +42,6 @@ func init() {
 
 	UserIndex = conf.Source["user_index"]
 	UserType = conf.Source["user_type"]
+	SecretKey = conf.Source["auth_secret_key"]
+	fmt.Println(conf.Source)
 }

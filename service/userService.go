@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -30,6 +31,29 @@ func SaveUser(ID, name, email, password string) (*model.ElasResp, error) {
 	}
 
 	return resp, nil
+}
+
+// GetUserByIDAndPassword ログイン認証時、IDとパスワードでユーザ検索
+func GetUserByIDAndPassword(id, password string) (*model.User, error) {
+
+	searchReq := &model.SearchReq{}
+	searchReq.AddMust("term", "_id", id)
+	URL := fmt.Sprintf("%s/%s/_search", config.BaseURL, config.UserIndex)
+	searchResp := &model.SearchResp{}
+	if err := HTTPRequest(http.MethodPost, URL, searchReq, searchResp); err != nil {
+		return nil, err
+	}
+
+	if len(searchResp.Hits.Hits) != 1 {
+		return nil, errors.New("user取得失敗")
+	}
+
+	user := &searchResp.Hits.Hits[0].User
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // SearchUsers 引数のIDのデータを取得
