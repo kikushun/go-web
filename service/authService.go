@@ -3,8 +3,6 @@ package service
 import (
 	"errors"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kikuchi/go-web/config"
@@ -18,7 +16,7 @@ func CreateToken(user *model.User) (string, error) {
 		"user_id":    user.ID,
 		"user_name":  user.Name,
 		"user_email": user.Email,
-		"exp":        time.Now().Add(1 * time.Minute).Unix(),
+		// "exp":        time.Now().Add(1 * time.Minute).Unix(),
 	})
 
 	tokenStr, err := token.SignedString([]byte(config.SecretKey))
@@ -32,13 +30,9 @@ func CreateToken(user *model.User) (string, error) {
 // Authenticate 認証
 func Authenticate(r *http.Request) error {
 
-	strArr := strings.Fields(r.Header.Get("Authorization"))
+	tokenStr := r.FormValue("token")
 
-	if len(strArr) != 2 {
-		return errors.New("[認証エラー] Authorizationヘッダーの文字列が不正です。")
-	}
-
-	token, err := jwt.Parse(strArr[1], checkToken)
+	token, err := jwt.Parse(tokenStr, checkToken)
 	if err != nil {
 		return err
 	}

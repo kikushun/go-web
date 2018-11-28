@@ -41,6 +41,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// トークンをDataに詰めてレスポンス
-	byteArr, _ := json.Marshal(&model.Response{Status: 0, Data: fmt.Sprintf("Bearer %s", token)})
+	byteArr, _ := json.Marshal(&model.Response{Status: 0, Data: token})
 	w.Write(byteArr)
 }

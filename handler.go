@@ -18,19 +18,24 @@ type handler struct {
 // 共通処理はここ
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	// ================
 	// 共通処理(前処理)
 	// ================
 
 	// リクエストメソッドチェック
 	if h.method != r.Method {
-		http.Error(w, fmt.Sprintf("No handler found for uri [%s] and method [%s]", r.RequestURI, r.Method), http.StatusBadRequest)
+		byteArr, _ := json.Marshal(&model.Response{Status: 9, Msg: fmt.Sprintf("No handler found for uri [%s] and method [%s]", r.RequestURI, r.Method)})
+		w.Write(byteArr)
 		return
 	}
 
 	// 認証チェック
 	if err := service.Authenticate(r); err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		byteArr, _ := json.Marshal(&model.Response{Status: 9, Msg: err.Error()})
+		w.Write(byteArr)
 		return
 	}
 
